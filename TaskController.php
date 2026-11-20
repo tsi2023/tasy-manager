@@ -12,9 +12,16 @@ class TaskController {
 
     public function index() {
 
-    $tasks = $this->taskModel->getAll();
-
-    require __DIR__ . '/../Views/tasks/list.php'; //require :charge le fichier View.
+        if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $title = $_POST['title'];
+            $description = $_POST['description'];
+            $this->taskModel->create($title, $description);
+            header("Location: index.php");
+            exit;
+        }
+        $tasks = $this->taskModel->getAll();
+        require __DIR__ . '/../Views/tasks/list.php'; //require :charge le fichier View.
+    
     }
 
     public function show($id){

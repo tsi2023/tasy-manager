@@ -14,7 +14,7 @@ try { //essaie d'excuter le code
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION // demander explicitement à PDO en cas d'erreur
         ]
     );
-    echo "Connexion réussie à la base de données !";
+    //echo "Connexion réussie à la base de données !";
 
 } catch (PDOException $e) { //intercepte une erreur eventuelle $e contient les infos sur l'erreur
     die("Erreur de connexion : " . $e->getMessage()); //arrete le script et affiche le message

@@ -8,6 +8,18 @@
 
     <h1>Ma liste de tâches</h1>
 
+    <h2>Ajouter une tâche</h2>
+
+    <form method="POST" action="">
+        <label for="title">Titre :</label>
+        <input type="text" id="title" name="title" required>
+
+        <label for="description">Description :</label>
+        <textarea id="description" name="description"></textarea>
+
+        <button type="submit">Ajouter</button>
+    </form>
+
     <?php foreach ($tasks as $task): ?>
 
         <h2><?= htmlspecialchars($task['title']) ?></h2>
