@@ -27,8 +27,12 @@
         <p><?= htmlspecialchars($task['description']) ?></p>
 
         <form method="POST" action="?action=delete"> 
-          <input type="hidden" name="id" value="<?= $task['id'] ?>">
+           <input type="hidden" name="id" value="<?= $task['id'] ?>">
            <button type="submit">supprimer</button> 
+        </form>
+        <form method="POST" action="?action=edit">
+            <input type="hidden" name="id" value="<?= $task['id'] ?>">
+            <button type="submit">Modifier</button>
         </form>
 
     <?php endforeach; ?>

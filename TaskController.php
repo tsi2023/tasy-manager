@@ -38,4 +38,21 @@ class TaskController {
             exit;
         }
     }
+    public function edit() {
+        if($_SERVER['REQUEST_METHOD'] === 'POST'){
+          $id = $_POST['id'];
+          $task = $this->taskModel->getById($id); 
+          require __DIR__ . '/../Views/tasks/edit.php';
+        }
+    }
+    public function update() {
+         if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $id = $_POST['id'];
+            $title = $_POST['title'];
+            $description = $_POST['description'];
+            $this->taskModel->update($id, $title, $description);
+            header("Location: index.php");
+            exit;
+         }
+    }
 }

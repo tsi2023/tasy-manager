@@ -8,6 +8,10 @@ $controller = new TaskController($connexion);
 
 if (isset($_GET['action']) && $_GET['action'] === 'delete') {
     $controller->delete();
+} elseif(isset($_GET['action']) && $_GET['action'] === 'edit'){
+    $controller->edit();
+}elseif (isset($_GET['action']) && $_GET['action'] === 'update'){
+    $controller->update();
 } else {
     $controller->index();
 }
