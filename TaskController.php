@@ -29,4 +29,13 @@ class TaskController {
 
         return $tasks;
     }
+
+    public function delete(){
+        if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $id = $_POST['id'];
+            $this->taskModel->delete($id);
+            header("Location: index.php");
+            exit;
+        }
+    }
 }

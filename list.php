@@ -26,6 +26,11 @@
 
         <p><?= htmlspecialchars($task['description']) ?></p>
 
+        <form method="POST" action="?action=delete"> 
+          <input type="hidden" name="id" value="<?= $task['id'] ?>">
+           <button type="submit">supprimer</button> 
+        </form>
+
     <?php endforeach; ?>
 
 </body>
