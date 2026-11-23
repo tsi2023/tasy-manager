@@ -12,17 +12,26 @@ class TaskController {
 
     public function index() {
 
-        if($_SERVER['REQUEST_METHOD'] === 'POST'){
-            $title = $_POST['title'];
-            $description = $_POST['description'];
-            $this->taskModel->create($title, $description);
-            header("Location: index.php");
-            exit;
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        if($this->isCsrfTokenValid()){
+
+            $title = trim($_POST['title'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+
+            if ($title !== '') {
+            
+                $this->taskModel->create($title, $description);
+
+                header("Location: index.php");
+                exit;
+            }    
         }
-        $tasks = $this->taskModel->getAll();
-        require __DIR__ . '/../Views/tasks/list.php'; //require :charge le fichier View.
-    
     }
+
+    $tasks = $this->taskModel->getAll();
+    require __DIR__ . '/../Views/tasks/list.php';
+}
 
     public function show($id){
         $tasks = $this->taskModel->getById($id);
@@ -32,27 +41,51 @@ class TaskController {
 
     public function delete(){
         if($_SERVER['REQUEST_METHOD'] === 'POST'){
-            $id = $_POST['id'];
-            $this->taskModel->delete($id);
-            header("Location: index.php");
-            exit;
+            if($this->isCsrfTokenValid()){
+                $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
+                if ($id !== false && $id > 0){
+                    if($this->taskModel->getById($id)){            
+                        $this->taskModel->delete($id);
+                        header("Location: index.php");
+                        exit;
+                    }
+                }
+            }
         }
     }
     public function edit() {
         if($_SERVER['REQUEST_METHOD'] === 'POST'){
-          $id = $_POST['id'];
-          $task = $this->taskModel->getById($id); 
-          require __DIR__ . '/../Views/tasks/edit.php';
+          if($this->isCsrfTokenValid()){  
+            $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
+            if ($id !== false && $id > 0){
+                $task = $this->taskModel->getById($id);
+                if ($task){
+                    require __DIR__ . '/../Views/tasks/edit.php';
+                }
+            }
+          }
         }
     }
     public function update() {
-         if($_SERVER['REQUEST_METHOD'] === 'POST'){
-            $id = $_POST['id'];
-            $title = $_POST['title'];
-            $description = $_POST['description'];
-            $this->taskModel->update($id, $title, $description);
-            header("Location: index.php");
-            exit;
-         }
+        if($_SERVER['REQUEST_METHOD'] === 'POST'){
+            if($this->isCsrfTokenValid()){
+                $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
+                $title = trim($_POST['title'] ?? '');
+                $description = trim($_POST['description'] ?? '');
+                if ($id !== false && $id > 0 && $title !== ''){
+                    if($this->taskModel->getById($id)){            
+                        $this->taskModel->update($id, $title, $description);
+                        header("Location: index.php");
+                        exit;
+                    }
+                }
+            }
+        }
+    }
+    private function isCsrfTokenValid(){
+    return isset($_POST['csrf_token'])
+        && isset($_SESSION['csrf_token'])
+        && hash_equals($_SESSION['csrf_token'], $_POST['csrf_token']);
     }
 }
+

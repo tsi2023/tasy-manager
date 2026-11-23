@@ -9,6 +9,7 @@
     <h2>Modifier une tâche</h2>
 
     <form method="POST" action="?action=update">
+        <input type="hidden" name="csrf_token" value=<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?> >
         <label for="title">Titre :</label>
         <input type="text" id="title" name="title" required value="<?= htmlspecialchars($task['title']) ?>">
         <input type="hidden" name="id" value="<?= $task['id'] ?>">
