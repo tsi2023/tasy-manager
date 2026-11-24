@@ -20,12 +20,13 @@ class TaskController {
             $description = trim($_POST['description'] ?? '');
 
             if ($title !== '') {
-            
                 $this->taskModel->create($title, $description);
+            } else {
+                $_SESSION['nom_du_message'] = 'Le titre de la tâche est obligatoire.';
+            }
 
-                header("Location: index.php");
-                exit;
-            }    
+            header("Location: index.php");
+            exit; 
         }
     }
 
@@ -38,48 +39,61 @@ class TaskController {
 
         return $tasks;
     }
-
     public function delete(){
-        if($_SERVER['REQUEST_METHOD'] === 'POST'){
-            if($this->isCsrfTokenValid()){
-                $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
-                if ($id !== false && $id > 0){
-                    if($this->taskModel->getById($id)){            
-                        $this->taskModel->delete($id);
-                        header("Location: index.php");
-                        exit;
-                    }
-                }
+        if($_SERVER['REQUEST_METHOD'] === 'POST' && $this->isCsrfTokenValid()){
+            $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
+            if ($id === false || $id <= 0){
+                $_SESSION['nom_du_message'] = 'La tâche demandée est introuvable.';       
+            } elseif($this->taskModel->getById($id)){
+                $this->taskModel->delete($id);
+            } else{
+                $_SESSION['nom_du_message'] = 'La tâche demandée est introuvable.';
             }
+            header("Location: index.php");
+            exit;
         }
     }
     public function edit() {
-        if($_SERVER['REQUEST_METHOD'] === 'POST'){
-          if($this->isCsrfTokenValid()){  
+        if($_SERVER['REQUEST_METHOD'] === 'POST'&& $this->isCsrfTokenValid()){  
             $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
-            if ($id !== false && $id > 0){
+            $error = false;
+            if ($id === false || $id <= 0){
+                $error = true;
+            $_SESSION['nom_du_message'] = 'La tâche demandée est introuvable.';            
+            } else {
                 $task = $this->taskModel->getById($id);
-                if ($task){
+                if($task){
                     require __DIR__ . '/../Views/tasks/edit.php';
+                } else{
+                    $error = true;
+                    $_SESSION['nom_du_message'] = 'La tâche demandée est introuvable.';            
                 }
             }
-          }
+            if($error === true){
+                header("Location: index.php");
+                exit;
+            }
         }
     }
     public function update() {
-        if($_SERVER['REQUEST_METHOD'] === 'POST'){
-            if($this->isCsrfTokenValid()){
-                $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
-                $title = trim($_POST['title'] ?? '');
-                $description = trim($_POST['description'] ?? '');
-                if ($id !== false && $id > 0 && $title !== ''){
-                    if($this->taskModel->getById($id)){            
-                        $this->taskModel->update($id, $title, $description);
-                        header("Location: index.php");
-                        exit;
-                    }
+        if($_SERVER['REQUEST_METHOD'] === 'POST' && $this->isCsrfTokenValid()){
+            $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
+            $title = trim($_POST['title'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+            if ($id === false || $id <= 0 ){
+                $_SESSION['nom_du_message'] = 'La tâche demandée est introuvable.';
+            } elseif($this->taskModel->getById($id)){
+                if($title === ''){
+                    $_SESSION['nom_du_message'] = 'Le titre de la tâche est obligatoire.';
+                } else{
+                    $this->taskModel->update($id, $title, $description);
                 }
+            } else{
+                $_SESSION['nom_du_message'] = 'La tâche demandée est introuvable.';
             }
+            header("Location: index.php");
+            exit;
+
         }
     }
     private function isCsrfTokenValid(){
