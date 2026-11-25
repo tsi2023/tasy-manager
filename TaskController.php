@@ -12,27 +12,27 @@ class TaskController {
 
     public function index() {
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-        if($this->isCsrfTokenValid()){
+            if($this->isCsrfTokenValid()){
 
-            $title = trim($_POST['title'] ?? '');
-            $description = trim($_POST['description'] ?? '');
+                $title = trim($_POST['title'] ?? '');
+                $description = trim($_POST['description'] ?? '');
 
-            if ($title !== '') {
-                $this->taskModel->create($title, $description);
+                if ($title !== '') {
+                    $this->taskModel->create($title, $description);
+                } else {
+                    $_SESSION['nom_du_message'] = 'Le titre de la tâche est obligatoire.';
+                } 
             } else {
-                $_SESSION['nom_du_message'] = 'Le titre de la tâche est obligatoire.';
+                $_SESSION['nom_du_message'] = 'Requête invalide. Veuillez réessayer.';
             }
-
             header("Location: index.php");
-            exit; 
+            exit;
         }
+        $tasks = $this->taskModel->getAll();
+        require __DIR__ . '/../Views/tasks/list.php';
     }
-
-    $tasks = $this->taskModel->getAll();
-    require __DIR__ . '/../Views/tasks/list.php';
-}
 
     public function show($id){
         $tasks = $this->taskModel->getById($id);
@@ -40,7 +40,9 @@ class TaskController {
         return $tasks;
     }
     public function delete(){
-        if($_SERVER['REQUEST_METHOD'] === 'POST' && $this->isCsrfTokenValid()){
+        if($_SERVER['REQUEST_METHOD'] != 'POST' || !$this->isCsrfTokenValid()){
+            $_SESSION['nom_du_message'] = 'Requête invalide. Veuillez réessayer.';
+        } else{
             $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
             if ($id === false || $id <= 0){
                 $_SESSION['nom_du_message'] = 'La tâche demandée est introuvable.';       
@@ -49,12 +51,16 @@ class TaskController {
             } else{
                 $_SESSION['nom_du_message'] = 'La tâche demandée est introuvable.';
             }
-            header("Location: index.php");
-            exit;
         }
+        header("Location: index.php");
+        exit;
     }
     public function edit() {
-        if($_SERVER['REQUEST_METHOD'] === 'POST'&& $this->isCsrfTokenValid()){  
+        if($_SERVER['REQUEST_METHOD'] != 'POST' || !$this->isCsrfTokenValid()){  
+          $_SESSION['nom_du_message'] = 'Requête invalide. Veuillez réessayer.';
+          header("Location: index.php");
+          exit;
+        } else {
             $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
             $error = false;
             if ($id === false || $id <= 0){
@@ -72,11 +78,13 @@ class TaskController {
             if($error === true){
                 header("Location: index.php");
                 exit;
-            }
+            } 
         }
     }
     public function update() {
-        if($_SERVER['REQUEST_METHOD'] === 'POST' && $this->isCsrfTokenValid()){
+        if($_SERVER['REQUEST_METHOD'] != 'POST' || !$this->isCsrfTokenValid()){
+            $_SESSION['nom_du_message'] = 'Requête invalide. Veuillez réessayer.';
+        } else{
             $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
             $title = trim($_POST['title'] ?? '');
             $description = trim($_POST['description'] ?? '');
@@ -91,10 +99,9 @@ class TaskController {
             } else{
                 $_SESSION['nom_du_message'] = 'La tâche demandée est introuvable.';
             }
-            header("Location: index.php");
-            exit;
-
         }
+        header("Location: index.php");
+        exit;
     }
     private function isCsrfTokenValid(){
     return isset($_POST['csrf_token'])
