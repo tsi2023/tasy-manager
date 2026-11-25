@@ -19,16 +19,17 @@ class Task {
         return $tasks;
     }
     //ajouter ,une tache
-    public function create($title, $description) {
+    public function create($title, $description, $status) {
 
-        $sql = "INSERT INTO tasks (title, description)
-                VALUES (:title, :description)";
+        $sql = "INSERT INTO tasks (title, description, status)
+                VALUES (:title, :description, :status)";
 
         $prepare = $this->connexion->prepare($sql);
 
         $prepare->execute([
             ':title' => $title,
-            ':description' => $description
+            ':description' => $description,
+            ':status' => $status
         ]);
     }
     public function update($id, $title, $description) {
@@ -70,5 +71,13 @@ class Task {
         $task = $prepare->fetch(PDO::FETCH_ASSOC);
 
         return $task;
+    }
+    public function updateStatus($id, $status){
+        $sql = "UPDATE tasks SET status = :status WHERE id = :id" ;
+        $prepare = $this->connexion->prepare($sql);
+        $prepare->execute([
+            ':id' => $id,
+            ':status' => $status
+        ]);
     }
 }

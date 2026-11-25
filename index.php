@@ -16,7 +16,9 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete') {
     $controller->edit();
 }elseif (isset($_GET['action']) && $_GET['action'] === 'update'){
     $controller->update();
-} else {
+} elseif(isset($_GET['action']) && $_GET['action'] === 'updateStatus'){
+    $controller->updateStatus();
+}else {
     $controller->index();
 }
 

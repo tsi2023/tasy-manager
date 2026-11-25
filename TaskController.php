@@ -20,7 +20,7 @@ class TaskController {
                 $description = trim($_POST['description'] ?? '');
 
                 if ($title !== '') {
-                    $this->taskModel->create($title, $description);
+                    $this->taskModel->create($title, $description, 0);
                 } else {
                     $_SESSION['nom_du_message'] = 'Le titre de la tâche est obligatoire.';
                 } 
@@ -108,5 +108,28 @@ class TaskController {
         && isset($_SESSION['csrf_token'])
         && hash_equals($_SESSION['csrf_token'], $_POST['csrf_token']);
     }
+    public function updateStatus(){
+        if($_SERVER['REQUEST_METHOD'] === 'POST' && $this->isCsrfTokenValid()){
+        $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
+        $status = filter_var($_POST['status'] ?? null, FILTER_VALIDATE_INT);
+            if ($id === false || $id <= 0) {
+               $_SESSION['nom_du_message'] = 'La tâche demandée est introuvable.';
+            } else{
+                $task = $this->taskModel->getById($id);
+                if (!$task) {
+                    $_SESSION['nom_du_message'] = 'La tâche demandée est introuvable.';
+                } elseif ($status === false || !in_array($status, [0, 1, 2], true)) {
+                    $_SESSION['nom_du_message'] = 'Le statut demandé est invalide.';      
+                }else{
+                    $this->taskModel->updateStatus($id, $status);
+                }
+            }
+        } else {
+            $_SESSION['nom_du_message'] = 'Requête invalide. Veuillez réessayer.';
+        }
+        header("Location: index.php");
+        exit; 
+    }
 }
+
 

@@ -32,10 +32,27 @@
     ?>
     <?php foreach ($tasks as $task): ?>
 
-        <h2><?= htmlspecialchars($task['title']) ?></h2>
-
-        <p><?= htmlspecialchars($task['description']) ?></p>
-
+        <h2><?= htmlspecialchars($task['title'], ENT_QUOTES, 'UTF-8') ?></h2>
+        <p><?= htmlspecialchars($task['description'], ENT_QUOTES, 'UTF-8') ?></p>
+        <?php if ($task['status'] == 0):?>
+            <p>A faire</p>
+        <?php elseif ($task['status'] == 1):?>
+            <p>en cours</p>
+        <?php elseif ($task['status'] == 2):?>
+            <p>Terminée</p>    
+        <?php else: ?>
+            <p>Statut inconnu</p>
+        <?php endif; ?>
+        <form method="POST" action="?action=updateStatus">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>" >
+           <input type="hidden" name="id" value="<?= $task['id'] ?>">
+           <select name="status">
+                <option value="0" <?= $task['status'] == 0 ? 'selected' : '' ?>>À faire</option>
+                <option value="1" <?= $task['status'] == 1 ? 'selected' : '' ?>>En cours</option>
+                <option value="2" <?= $task['status'] == 2 ? 'selected' : '' ?>>Terminée</option>
+            </select>
+            <button type="submit">Modifier le statut</button>
+        </form>
         <form method="POST" action="?action=delete">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>" >
            <input type="hidden" name="id" value="<?= $task['id'] ?>">
