@@ -20,6 +20,16 @@
 
         <button type="submit">Ajouter</button>
     </form>
+    <form method="GET" action="index.php">
+        <select name="status">
+            <option value="all">Toutes les tâches</option>
+            <option value="0">À faire</option>
+            <option value="1">En cours</option>
+            <option value="2">Terminées</option>
+        </select>
+
+        <button type="submit">Filtrer</button>
+    </form>
     <?php
     if (isset($_SESSION['nom_du_message'])) {
         $message = $_SESSION['nom_du_message'];

@@ -30,7 +30,16 @@ class TaskController {
             header("Location: index.php");
             exit;
         }
-        $tasks = $this->taskModel->getAll();
+        $status = $_GET['status'] ?? 'all';
+        if ($status === '0') {
+            $tasks = $this->taskModel->status(0);
+        } elseif ($status === '1') {
+            $tasks = $this->taskModel->status(1);
+        } elseif ($status === '2') {
+            $tasks = $this->taskModel->status(2);
+        } else {
+            $tasks = $this->taskModel->getAll();
+        }
         require __DIR__ . '/../Views/tasks/list.php';
     }
 

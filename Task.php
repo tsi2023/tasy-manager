@@ -80,4 +80,16 @@ class Task {
             ':status' => $status
         ]);
     }
+    public function status($status) {
+
+        $sql ="SELECT * FROM tasks WHERE status = :status";
+        $prepare = $this->connexion->prepare($sql);
+        $prepare->execute([
+            ':status' => $status
+        ]);
+
+        $task = $prepare->fetchAll(PDO::FETCH_ASSOC);
+
+        return $task;
+    }
 }
